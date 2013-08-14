@@ -5,7 +5,7 @@ Plugin URI: http://www.domaintools.com/whois-applications/wordpress-plugin/
 Author: domaintools
 Author URI: http://domaintools.com
 Description: Inserts link to whois page for domains found on wordpress articles.
-Version: 1.0
+Version: 1.1
 */
 require_once(dirname(__FILE__) . '/php/idna_convert.class.php');
 require_once(dirname(__FILE__) . '/php/simple_html_dom.php');
@@ -38,13 +38,13 @@ if (!class_exists("DomaintoolsPlugin"))
         {
 
             //write div that will be used by tooltips only once all posts are loaded
-            echo '<div id="tooltip_div" style="overflow: hidden; background-color: #CCCCCC; border: 0; padding: 0 0 0 0; margin: 0 0 0 0; text-align: center; display: none;"></div>' . "\n";
+            echo '<div id="tooltip_div" style="overflow: hidden; border: 0; padding: 0 0 0 0; margin: 0 0 0 0; text-align: center; display: none;"></div>' . "\n";
             echo '<script language="javascript" src="' . get_bloginfo('wpurl') . '/wp-content/plugins/domaintools-whois-plugin/js/cluetip.init.js"></script>' . "\n";
             $options = $this->getAdminOptions();
             if($options["link_a_tag_whois"] == "yes")
             {
-                echo '<script language="javascript" src="' . get_bloginfo('wpurl') . '/wp-content/plugins/domaintools-whois-plugin/js/legacylinks.js"></script>' . "\n";
-                echo '<script language="javascript">LegacyLinks("' . $options["show_tooltip"] . '","' . $options["window_type"] . '","' . get_bloginfo('wpurl') . '/wp-content/plugins/domaintools-whois-plugin/images/icon.gif"); </script>' . "\n";
+                //echo '<script language="javascript" src="' . get_bloginfo('wpurl') . '/wp-content/plugins/domaintools-whois-plugin/js/legacylinks.js"></script>' . "\n";
+                //echo '<script language="javascript">LegacyLinks("' . $options["show_tooltip"] . '","' . $options["window_type"] . '","' . get_bloginfo('wpurl') . '/wp-content/plugins/domaintools-whois-plugin/images/icon.gif"); </script>' . "\n";
             }
         }
 
@@ -64,14 +64,6 @@ if (!class_exists("DomaintoolsPlugin"))
                 if (!is_admin())
                 {
                     $options = $this->getAdminOptions();
-                    if($options["enable_jquery"] == "yes")
-                    {
-                        wp_deregister_script('jquery');
-                        wp_register_script('jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js', false, '1.3.2');
-                    }
-                    wp_enqueue_script('jquery');
-                    wp_register_script('jquery.cluetip', get_bloginfo('wpurl') . '/wp-content/plugins/domaintools-whois-plugin/js/jquery.cluetip.js', false, '1.0.4');
-                    wp_enqueue_script('jquery.cluetip');
                 }
             }
         }
@@ -86,8 +78,7 @@ if (!class_exists("DomaintoolsPlugin"))
                                              'data_dates' => 'yes',
                                              'data_registrant' => 'yes',
                                              'data_ip' => 'yes',
-                                             'data_tlds' => 'yes',
-                                             'enable_jquery' => 'yes');
+                                             'data_tlds' => 'yes');
             $pluginOptions = get_option($this->adminOptionsName);
             if (!empty($pluginOptions)) 
             {
@@ -139,10 +130,6 @@ if (!class_exists("DomaintoolsPlugin"))
                 {
                     $pluginOptions['data_tlds'] = $_POST['dt_data_tlds'];
                 }
-                if (isset($_POST['dt_enable_jquery']))
-                {
-                    $pluginOptions['enable_jquery'] = $_POST['dt_enable_jquery'];
-                }
                 update_option($this->adminOptionsName, $pluginOptions);
                 ?>
                 <div class="updated"><p><strong><?php _e("Settings Updated.", "DomaintoolsPlugin");?></strong></p></div>
@@ -181,12 +168,6 @@ if (!class_exists("DomaintoolsPlugin"))
 <?php if ($pluginOptions['link_a_tag_whois'] == "yes") { _e('checked="checked"', "DomaintoolsPlugin"); }?> /> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="dt_link_a_tag_whois_no"><input type="radio" id="dt_link_a_tag_whois_no" name="dt_link_a_tag_whois" value="no" 
 <?php if ($pluginOptions['link_a_tag_whois'] == "no") { _e('checked="checked"', "DomaintoolsPlugin"); }?>/> No</label></p>
 
-<h3>Use Google hosted jquery library?</h3>
-<p>Selecting "No" will use wordpress's packaged version of jquery. Note: This plugin requires jquery v1.2.6 or later.</p>
-<p><label for="dt_enable_jquery_yes"><input type="radio" id="dt_enable_jquery_yes" name="dt_enable_jquery" value="yes" 
-<?php if ($pluginOptions['enable_jquery'] == "yes") { _e('checked="checked"', "DomaintoolsPlugin"); }?> /> Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label for="dt_enable_jquery_no"><input type="radio" id="dt_enable_jquery_no" name="dt_enable_jquery" value="no" 
-<?php if ($pluginOptions['enable_jquery'] == "no") { _e('checked="checked"', "DomaintoolsPlugin"); }?>/> No</label></p>
-
 <div class="submit">
 <input type="submit" name="update_dt_settings" value="<?php _e('Update Settings', 'DomaintoolsPlugin') ?>" /></div>
 </form>
@@ -210,7 +191,7 @@ if (!class_exists("DomaintoolsPlugin"))
                 if ( ($this->pluginOptions['link_unique_domains'] == 'no') || ( !isset($this->linkedDomains[$domain])) )
                 {
                     $this->linkedDomains[$domain] = 1;
-                    return('<a class="dlink" title="whois ' . $matches[1] . '" href="http://whois.domaintools.com/' . $domain . '" target="' . $this->linkTarget . '">' . $matches[1] . '</a>' . '<a class="tooltip" title="whois ' . $domain . '" onmouseover="tooltip_frm.update(\'' . $tooltip_url . '\')" rel="#tooltip_div" target="' . $this->linkTarget . '" href="http://whois.domaintools.com/' . $domain . '" target="' . $this->linkTarget . '"><img style="margin-left: 5px;" src="' . $this->bubbleIcon . '" alt="' . $matches[1] . '"/></a>');
+                    return('<a class="dlink" title="whois ' . $matches[1] . '" href="http://whois.domaintools.com/' . $domain . '" target="' . $this->linkTarget . '">' . $matches[1] . '</a>' . '<a class="tooltip" title="whois ' . $domain . '" data-url="' . $tooltip_url . '" rel="#tooltip_div" target="' . $this->linkTarget . '" href="http://whois.domaintools.com/' . $domain . '" target="' . $this->linkTarget . '"><img style="margin-left: 5px;" src="' . $this->bubbleIcon . '" alt="' . $matches[1] . '"/></a>');
                 }
                 else
                 {
@@ -222,7 +203,7 @@ if (!class_exists("DomaintoolsPlugin"))
                 if ( ($this->pluginOptions['link_unique_domains'] == 'no') || ( !isset($this->linkedDomains[$domain])) )
                 {
                     $this->linkedDomains[$domain] = 1;
-                    return($matches[1] . '<a class="tooltip" title="whois ' . $matches[1] . '" onmouseover="tooltip_frm.update(\'' . $tooltip_url . '\')" rel="#tooltip_div" target="' . $this->linkTarget . '" href="http://whois.domaintools.com/' . $domain . '" target="' . $this->linkTarget . '"><img style="margin-left: 5px;" src="' . $this->bubbleIcon . '" alt="' . $matches[1] . '"/></a>');
+                    return($matches[1] . '<a class="tooltip" title="whois ' . $matches[1] . '" data-url="' . $tooltip_url . '" rel="#tooltip_div" target="' . $this->linkTarget . '" href="http://whois.domaintools.com/' . $domain . '" target="' . $this->linkTarget . '"><img style="margin-left: 5px;" src="' . $this->bubbleIcon . '" alt="' . $matches[1] . '"/></a>');
                 }
                 else
                 {

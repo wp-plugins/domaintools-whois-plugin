@@ -2,8 +2,8 @@
 Contributors: domaintools
 Tags: whois, widget, tooltip, domains, links, domaintools
 Requires at least: 2.3
-Tested up to: 2.8.6
-Stable tag: 1.0
+Tested up to: 3.6
+Stable tag: 1.1
 
 DomainTools whois plugin shows whois data for domains found in blog articles and links them to whois.domaintools.com.
 
@@ -23,3 +23,9 @@ The DomainTools Whois plugin will automatically link domain names in a WordPress
 
 = 1.0 =
 * first public version of plugin
+
+= 1.1 =
+* add dynamically (only if needed) the minimum jquery version for the plugin
+* remove inline js
+* correct plugin display bugs
+* minimum jquery version needed is now 1.4+
